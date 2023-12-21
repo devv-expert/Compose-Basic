@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +20,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jetpack.composebasics.viewModel.MainViewModel
@@ -81,10 +85,16 @@ fun GreetingList(
     textFieldValue: String,
     textFieldUpdate: (String) -> Unit
 ) {
+    val StringValue = remember {
+        mutableStateOf("")
+    }
+
+    var nameTF = TextFieldValue("")
+    var stringT = ""
+
     for (names in namesList) {
         Greeting2(name = names)
     }
-
     /*TextField is the Editable text of the compose but it cannot the take care of there on state change so we have to take care of the state changes of the TextFiled
     * Using the stateManagement
     * here the mutableStateOf function will take care of the after we change the value of the compose
@@ -92,6 +102,14 @@ fun GreetingList(
     TextField(
         value = textFieldValue, onValueChange = textFieldUpdate
     )
+
+    TextField(value = nameTF, onValueChange = { newValue ->
+
+    })
+    TextField(value = StringValue.value, onValueChange = { newValue ->
+
+    }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
+
 
     Button(
         onClick = clickButton,
