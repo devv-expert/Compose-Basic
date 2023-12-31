@@ -1,7 +1,9 @@
 package com.jetpack.composebasics
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -32,13 +34,14 @@ class ListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            MainScreen(context = this)
+//            Yes data
         }
     }
 }
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = MainViewModel()) {
+fun MainScreen(viewModel: MainViewModel = MainViewModel(), context: Context) {
     /*Here we are using the State to changes the data in the List or add or remove the Data from the List
 * Remember keyword remember the state after it's change*/
 
@@ -60,7 +63,7 @@ fun MainScreen(viewModel: MainViewModel = MainViewModel()) {
 
             /*Now here we don't have to pass the lambda function
             * now we can pass the viewModel dataChange Function who observe the livaData*/
-            GreetingMessage(newNameStateContent.value) { newText ->
+            GreetingMessage(newNameStateContent.value , context) { newText ->
                 /*Here our viewModel taking care of the Data and State changes on the UI state*/
                 viewModel.onTextChange(newText)
             }
@@ -69,9 +72,9 @@ fun MainScreen(viewModel: MainViewModel = MainViewModel()) {
 }
 
 @Composable
-fun GreetingMessage(textFieldValue: String, textFieldUpdate: (String) -> Unit) {
+fun GreetingMessage(textFieldValue: String,context : Context, textFieldUpdate: (String) -> Unit) {
     TextField(value = textFieldValue, onValueChange = textFieldUpdate)
-    Button(onClick = { /*TODO*/ }) {
+    Button(onClick = {  }) {
         Text(text = textFieldValue)
 
     }
@@ -134,5 +137,5 @@ fun Greeting2(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview2() {
-    MainScreen()
+//    MainScreen()
 }
