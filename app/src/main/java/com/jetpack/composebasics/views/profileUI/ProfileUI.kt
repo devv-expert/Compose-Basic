@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -58,7 +60,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jetpack.composebasics.R
 import com.jetpack.composebasics.dataClass.UserData
+import com.jetpack.composebasics.dataClass.userProfiles
 import com.jetpack.composebasics.views.profileUI.ui.theme.MyTheme
+import com.thalesgroup.tshpaysample.init.TshInit
+import com.thalesgroup.tshpaysample.payment.PaymentActivity
+import com.thalesgroup.tshpaysample.payment.TshPaymentData
 import java.security.Provider
 
 class ProfileUI : ComponentActivity() {
@@ -72,7 +78,7 @@ class ProfileUI : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
+ @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
     MainScreen()
@@ -81,21 +87,24 @@ fun MainScreenPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(userData: List<UserData> = userProfiles) {
     Scaffold(topBar = { AppBar() }) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
         ) {
-            Column(modifier = Modifier.padding(top = 60.dp)) {
-                ProfileCard(userData = UserData("Amit", true, R.drawable.profile_picture))
-                ProfileCard(userData = UserData("Ravi", false, R.drawable.ic_launcher_foreground))
-                ProfileCard(userData = UserData("Akshit", true, R.drawable.ic_launcher_background))
-                ProfileCard(userData = UserData("Sandeep", false, R.drawable.profile_picture))
-
+            /*the Lazy Column is the Same thing as the RecyclerView in the Android with XML and it's also recycle the view for the Better performance*/
+            LazyColumn(modifier = Modifier.padding(top = 65.dp)) {
+                items(userData) { userProfiles ->
+                    ProfileCard(userData = userProfiles)
+                }
             }
+
         }
     }
+
+    TshInit
+    PaymentActivity()
 }
 
 @Composable
