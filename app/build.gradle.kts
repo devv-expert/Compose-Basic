@@ -74,7 +74,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     /*This will comvert the LiveData  to State in Compose*/
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
-    implementation("androidx.navigation:navigation-common:2.7.6")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 
     /*Image Load Library*/
     implementation("io.coil-kt:coil-compose:1.3.2")

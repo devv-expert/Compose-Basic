@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,14 +27,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,9 +40,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
-import com.jetpack.composebasics.dataClass.UserProfile
+import com.jetpack.composebasics.dataClass.UserProfiles
 import com.jetpack.composebasics.dataClass.userProfiles
 import com.jetpack.composebasics.views.profileUI.ui.theme.MyTheme
 
@@ -52,33 +59,44 @@ class ProfileUI : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                UserList()
+                UserApplication()
             }
         }
     }
 }
 
 @Composable
-fun UserApplication() {
+fun UserApplication(userData: List<UserProfiles> = userProfiles) {
 
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "user_list") {
+        composable("user_list") {
+            UserList(userData, navController)
+        }
+        composable(route = "user_details_screen/{userId}", arguments = listOf(navArgument("userId") {
+                type = NavType.IntType
+            })) { NavBackStackEntry ->
+            UserProfile(NavBackStackEntry.arguments!!.getInt("userId"))
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    UserList()
+    UserList(userData = userProfiles, navController = null)
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun UserProfilePreview() {
-    UserProfile()
-}
+    UserProfile(0)
+}*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun UserList(userData: List<UserProfile> = userProfiles) {
+fun UserList(userData: List<UserProfiles>, navController: NavController?) {
     Scaffold(topBar = { AppBar() }) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -87,7 +105,9 @@ fun UserList(userData: List<UserProfile> = userProfiles) {
             /*the Lazy Column is the Same thing as the RecyclerView in the Android with XML and it's also recycle the view for the Better performance*/
             LazyColumn(modifier = Modifier.padding(top = 65.dp)) {
                 items(userData) { userProfiles ->
-                    ProfileCard(userData = userProfiles)
+                    ProfileCard(userData = userProfiles) {
+                        navController?.navigate("user_details_screen/${userProfiles.id}")
+                    }
                 }
             }
 
@@ -96,13 +116,13 @@ fun UserList(userData: List<UserProfile> = userProfiles) {
 }
 
 @Composable
-fun ProfileCard(userData: UserProfile) {
+fun ProfileCard(userData: UserProfiles, clickAction: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(align = Alignment.Top)
-            .padding(start = 10.dp, end = 10.dp, top = 10.dp),
-
+            .padding(start = 10.dp, end = 10.dp, top = 10.dp)
+            .clickable { clickAction.invoke() },
         colors = CardDefaults.cardColors(
             Color.Cyan
         ), elevation = CardDefaults.cardElevation(10.dp)
@@ -116,6 +136,7 @@ fun ProfileCard(userData: UserProfile) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfilePicture(imageURL: String, isActiveStatus: Boolean, imageSize: Dp) {
     Card(
@@ -123,16 +144,9 @@ fun ProfilePicture(imageURL: String, isActiveStatus: Boolean, imageSize: Dp) {
             4.dp, color = if (isActiveStatus) Color.Green else Color.Red
         ), modifier = Modifier.padding(15.dp)
     ) {
-        Image(
-            painter = rememberImagePainter(
-                data = imageURL,
-                builder = {
-                    transformations(CircleCropTransformation())
-                }
-            ),
-            modifier = Modifier.size(imageSize),
-            contentDescription = "Profile picture"
-        )
+        Image(painter = rememberImagePainter(data = imageURL, builder = {
+            transformations(CircleCropTransformation())
+        }), modifier = Modifier.size(imageSize), contentDescription = "Profile picture")
     }
 }
 
@@ -141,8 +155,7 @@ fun ProfileContent(userName: String, isActiveStatus: Boolean, alignment: Alignme
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalAlignment = alignment
+            .padding(8.dp), horizontalAlignment = alignment
     ) {
         Text(
             text = userName,
@@ -174,7 +187,8 @@ fun AppBar() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun UserProfile(userProfile: UserProfile = userProfiles[0]) {
+fun UserProfile(userId: Int) {
+    val userProfile = userProfiles.first { userData -> userId == userData.id }
     Scaffold(topBar = { AppBar() }) {
         Surface(
             modifier = Modifier
