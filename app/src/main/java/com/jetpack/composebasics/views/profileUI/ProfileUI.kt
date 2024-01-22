@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -73,10 +75,13 @@ fun UserApplication(userData: List<UserProfiles> = userProfiles) {
         composable("user_list") {
             UserList(userData, navController)
         }
-        composable(route = "user_details_screen/{userId}", arguments = listOf(navArgument("userId") {
+        composable(
+            route = "user_details_screen/{userId}",
+            arguments = listOf(navArgument("userId") {
                 type = NavType.IntType
-            })) { NavBackStackEntry ->
-            UserProfile(NavBackStackEntry.arguments!!.getInt("userId"))
+            })
+        ) { NavBackStackEntry ->
+            UserProfile(NavBackStackEntry.arguments!!.getInt("userId"), navController)
         }
     }
 }
@@ -87,17 +92,17 @@ fun MainScreenPreview() {
     UserList(userData = userProfiles, navController = null)
 }
 
-/*@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun UserProfilePreview() {
-    UserProfile(0)
-}*/
+    UserProfile(0, null)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UserList(userData: List<UserProfiles>, navController: NavController?) {
-    Scaffold(topBar = { AppBar() }) {
+    Scaffold(topBar = { AppBar("User List", Icons.Default.Home) {} }) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
@@ -172,13 +177,14 @@ fun ProfileContent(userName: String, isActiveStatus: Boolean, alignment: Alignme
 
 @ExperimentalMaterial3Api
 @Composable
-fun AppBar() {
-    val appBarTitle = "Top App Bar"
+fun AppBar(appBarTitle: String, icon: ImageVector, backButtonAction: () -> Unit) {
     TopAppBar(title = { Text(text = appBarTitle) }, navigationIcon = {
         Icon(
-            imageVector = Icons.Default.Home,
+            imageVector = icon,
             contentDescription = "App Bar",
-            modifier = Modifier.padding(horizontal = 10.dp)
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .clickable { backButtonAction.invoke() }
         )
     }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
     )
@@ -187,9 +193,13 @@ fun AppBar() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun UserProfile(userId: Int) {
+fun UserProfile(userId: Int, navController: NavController?) {
     val userProfile = userProfiles.first { userData -> userId == userData.id }
-    Scaffold(topBar = { AppBar() }) {
+    Scaffold(topBar = {
+        AppBar(appBarTitle = "User Profile", Icons.Default.ArrowBack) {
+            navController?.navigateUp()
+        }
+    }) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
