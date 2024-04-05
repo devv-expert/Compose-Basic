@@ -2,14 +2,11 @@ package com.jetpack.composebasics
 
 import android.content.Context
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -31,14 +28,26 @@ import com.jetpack.composebasics.viewModel.MainViewModel
 val nameList: ArrayList<String> = arrayListOf("Amit", "Ajay", "Billu", "Rubby")
 
 class ListActivity : ComponentActivity() {
+    var arrayDataFromAPI = arrayListOf<Data>()
+    var normalData = arrayListOf<Data>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainScreen(context = this)
 //            Yes data
+            User().data.forEach { userData ->
+                arrayDataFromAPI.add(userData)
+            }
+            Data()
         }
+
     }
+
+
 }
+
+data class Data(val name : String = "", val age : Int = -1)
+data class User(val data : ArrayList<Data> = arrayListOf(Data("Aasjkdh", 123)))
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = MainViewModel(), context: Context) {

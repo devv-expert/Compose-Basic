@@ -83,6 +83,10 @@ fun UserApplication(userData: List<UserProfiles> = userProfiles) {
         ) { NavBackStackEntry ->
             UserProfile(NavBackStackEntry.arguments!!.getInt("userId"), navController)
         }
+
+        composable("Basic_Text_Field_"){
+            TextFieldCompose()
+        }
     }
 }
 

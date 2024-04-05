@@ -24,12 +24,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import com.jetpack.composebasics.views.sampleUI.views.MainMUI
+import com.jetpack.composebasics.views.sampleUI.views.getToast
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            mainScreen()
+            MainScreen()
+            /*MainMUI{
+                getToast(this@MainActivity,it)
+            }*/
         }
     }
 }
@@ -71,7 +76,7 @@ fun Greeting(name: String) {
 }
 
 @Composable
-fun mainScreen() {
+fun MainScreen() {
     /*Surface is like ViewGroup of XLM class in compose inside the Surface we can define our view */
     Surface(
         color = Color.DarkGray,
@@ -88,19 +93,19 @@ fun mainScreen() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 /*Here we are using the same composable Surface function again for code re-usability*/
-                colorBox(Color.Yellow)
-                colorBox(Color.Magenta)
+                ColorBox(Color.Yellow)
+                ColorBox(Color.Magenta)
             }
 //          Here we are using the same composable Surface function again for code re-usability
-            colorBox(Color.Cyan)
-            colorBox(Color.Blue)
-            colorBox(Color.Red)
+            ColorBox(Color.Cyan)
+            ColorBox(Color.Blue)
+            ColorBox(Color.Red)
         }
     }
 }
 
 @Composable
-fun colorBox(color: Color) {
+fun ColorBox(color: Color) {
     /*This surface contain the Text view inside it*/
     Surface(
         color = color,
@@ -117,7 +122,7 @@ fun colorBox(color: Color) {
 }
 
 @Composable
-fun button() {
+fun Button() {
     Button(onClick = { }) {
         Greeting(name = "Button")
     }
@@ -126,5 +131,5 @@ fun button() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    mainScreen()
+    MainScreen()
 }
